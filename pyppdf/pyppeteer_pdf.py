@@ -6,9 +6,80 @@ import os.path as p
 import pathlib
 import asyncio
 from typing import Union
+import ast
+import copy
+import re
 # noinspection PyUnresolvedReferences
 from .patch_pyppeteer import patch_pyppeteer
 from pyppeteer import launch
+
+
+def litereval(string: str):
+    """
+    Small extension of ``ast.literal_eval`` that also
+    accepts dict in a form of ``{key=100, foo='bar'}``
+    """
+    input_charset = set(list(string))
+    reps = []
+    
+    for ch in range(256, sys.maxunicode):
+        if not (chr(ch) in input_charset):
+            reps.append(chr(ch))
+            if len(reps) == 3:
+                break
+
+    reps = {'\\': reps[0], '"': reps[1], "'": reps[2]}
+    string = re.sub(
+        r"(^|(?<=[^\\]))\\[\\'\"]",
+        lambda m: reps[m.group(0)[1:]],
+        string
+    )
+    string = re.sub(
+        r"(^|(?<=[^\\]))('''(.*?[^\\'])?'''|\"\"\"(.*?[^\\\"])?\"\"\"|'(.*?[^\\'])?'|\"(.*?[^\\\"])?\"|\w+[=]((?=[^=])|$))",
+        lambda m: f'"{m.group(0)[:-1]}": ' if (m.group(0)[-1] == '=') else m.group(0),
+        string,
+        flags=re.DOTALL
+    )
+    reps = {val: key for key, val in reps.items()}
+    string = re.sub(
+        r"[{''.join(map(re.escape, reps.keys()))}]",
+        lambda m: reps[m.group(0)],
+        string
+    )
+    return ast.literal_eval(string)
+
+
+def semimerge(source: dict, destination: dict,
+              deepcopy: bool=False):
+    """
+    Deep merge two dictionaries.
+    Overwrites in case of conflics.
+    From https://stackoverflow.com/a/20666342
+
+    >>> dst = {'first': {
+    >>>     'inn': {'foo': 'dog', 'n': 1}
+    >>> }}
+    >>> src = {'first': {
+    >>>     'inn': {'bar': 'cat', 'n': 5}
+    >>> }}
+    >>> semimerge(src, dst) == {'first': {
+    >>>     'inn': {'foo': 'dog', 'bar': 'cat', 'n': 5}
+    >>> }}
+    True
+    """
+    if deepcopy:
+        destination = copy.deepcopy(destination)
+
+    for key, val in source.items():
+        if isinstance(val, dict):
+            # get node or create one
+            node = destination.setdefault(key, {})
+            semimerge(val, node, deepcopy)
+        else:
+            destination[key] = (copy.deepcopy(val)
+                                if deepcopy else val)
+
+    return destination
 
 
 async def main(args: dict, temp_url: str, output_file: str):
@@ -36,7 +107,8 @@ def save_pdf(inp: str, out: str, args: Union[str, dict]='{}'):
 
     ``args`` example:
 
-    >>> "dict(goto=dict(timeout=100000), waitFor=(1,), pdf=dict(printBackground=True))"
+    >>> "{goto={timeout=100000}, waitFor=[1],
+    >>>   pdf={printBackground=True}}"
 
     Parameters
     ----------
@@ -50,9 +122,9 @@ def save_pdf(inp: str, out: str, args: Union[str, dict]='{}'):
         All keys are optional: 'goto' and 'pdf' values are dict,
         'waitFor' value is a tuple.
     """
-    args = eval(args) if isinstance(args, str) else args
+    args = litereval(args) if isinstance(args, str) else args
     if not isinstance(args, dict):
-        raise TypeError(f'Invalid pyppeteer arguments (should be dict): {args}')
+        raise TypeError(f'Invalid pyppeteer arguments (should be a dict): {args}')
 
     output_file = p.abspath(p.expandvars(p.expanduser(out)))
     temp_file = p.join(p.dirname(output_file),
