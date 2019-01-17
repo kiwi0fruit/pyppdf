@@ -13,7 +13,7 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
 
-    description='Print html sites and files to pdf via pyppeteer.',
+    description='Pyppeteer PDF. Print html sites and files to pdf via pyppeteer (uses patched pyppeteer that by default downloads updated Chromium revision via https with certifi).',
     long_description=long_description,
 
     url='https://github.com/kiwi0fruit/pyppdf',
@@ -37,5 +37,5 @@ setup(
     # keywords='sample setuptools development',
     packages=find_packages(exclude=['docs', 'tests']),
 
-    install_requires=['certifi', 'click', 'litereval', 'pyppeteer>=0.0.25'],
+    install_requires=['certifi', 'click', 'litereval>=0.0.2', 'pyppeteer>=0.0.25'],
 )
