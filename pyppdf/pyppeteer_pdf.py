@@ -5,7 +5,7 @@ import os.path as p
 import pathlib
 import asyncio
 from typing import Union
-from litereval import litereval, merge, get_args_kwargs
+from litereval import litereval, merge, get, args_kwargs
 # noinspection PyUnresolvedReferences
 from .patch_pyppeteer import patch_pyppeteer
 from pyppeteer import launch
@@ -16,12 +16,12 @@ class PyppdfError(Exception):
 
 
 async def main(args: dict, url: str, output_file: str):
-    launch_ = get_args_kwargs('launch', args, {})
-    goto = get_args_kwargs('goto', args, {})
+    launch_ = args_kwargs(get('launch', args, {}))
+    goto = args_kwargs(get('goto', args, {}))
     goto[1].pop('url', None)
-    emulateMedia = get_args_kwargs('emulateMedia', args)
-    waitfor = get_args_kwargs('waitFor', args)
-    pdf = get_args_kwargs('pdf', args, {})
+    emulateMedia = args_kwargs(get('emulateMedia', args))
+    waitfor = args_kwargs(get('waitFor', args))
+    pdf = args_kwargs(get('pdf', args, {}))
     pdf[1].pop('path', None)
 
     browser = await launch(*launch_[0], **launch_[1])
