@@ -64,7 +64,7 @@ def save_pdf(out: str='untitled.pdf', site: str=None, src: str=None,
     ``args_dict`` affect the following methods
     (only the last name should be used): ``pyppeteer.launch``, ``page.goto``,
     ``page.emulateMedia``, ``page.waitFor``, ``page.pdf``. See:
-     https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+      https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
     ``args_dict`` default value:
 
@@ -153,15 +153,16 @@ ARGS_DICT = docstr_defaults(save_pdf)
 
 
 @click.command(help=f"""Reads html document from stdin, converts it to pdf via
-pyppeteer and writes to disk.
+pyppeteer and writes to disk. SITE is optional and it's a site url of a file path.
 
 -d, --dict defaults:
 
 {re.sub(r'^ +', '', ARGS_DICT, flags=re.MULTILINE)}
 
 They affect the following pyppeteer methods (only the last name should be used):
-pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor, page.pdf.
-See: https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor, page.pdf. See:
+
+https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 """)
 @click.argument('site', type=str, default=None, required=False)
 @click.option('-d', '--dict', 'args_dict', type=str, default=None,
