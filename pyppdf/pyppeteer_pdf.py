@@ -4,6 +4,7 @@ import os
 import os.path as p
 import pathlib
 import asyncio
+import re
 from typing import Union
 from litereval import litereval, merge, get, args_kwargs
 # noinspection PyUnresolvedReferences
@@ -38,9 +39,25 @@ async def main(args: dict, url: str, output_file: str):
     await browser.close()
 
 
-def save_pdf(out: str, site: str=None, src: str=None, args_dict: Union[str, dict]=None,
+def docstr_defaults(func):
+    """
+    From func docstr reads and strips multiline
+    str with ``'<...>'`` contents only:
+
+    >>> # <...>
+    >>> # <...>
+    >>> #
+    """
+    return re.sub(r' +>>> # ', '', re.search(
+        r'(?<=>>> # ).+?(?=\r?\n +>>> #\r?\n)',
+        str(func.__doc__),
+        re.DOTALL).group(0))
+
+
+def save_pdf(out: str='untitled.pdf', site: str=None, src: str=None,
+             args_dict: Union[str, dict]=None,
              args_upd: Union[str, dict]=None) -> None:
-    r"""
+    """
     Converts html document to pdf via pyppeteer
     and writes to disk.
 
@@ -57,7 +74,7 @@ def save_pdf(out: str, site: str=None, src: str=None, args_dict: Union[str, dict
     >>> #  pdf={width='8.27in', printBackground=True,
     >>> #       margin={top='1in', right='1in',
     >>> #               bottom='1in', left='1in'},}}
-
+    >>> #
     ``args_upd`` example that won't overwrite another options:
 
     ``"{launch={args=['--no-sandbox', '--disable-setuid-sandbox']}, emulateMedia="screen", waitFor=1000}"``
@@ -83,12 +100,7 @@ def save_pdf(out: str, site: str=None, src: str=None, args_dict: Union[str, dict
         This dict would be recursively merged with args_dict.
     """
     if args_dict is None:
-        args_dict = dict(goto=dict(waitUntil='networkidle0',
-                                   timeout=100000),
-                         pdf=dict(width='8.27in',
-                                  printBackground=True,
-                                  margin=dict(top='1in', right='1in',
-                                              bottom='1in', left='1in'),))
+        args_dict = litereval(ARGS_DICT)
     elif isinstance(args_dict, str):
         args_dict = litereval(args_dict)
     if not isinstance(args_dict, dict):
@@ -104,7 +116,7 @@ def save_pdf(out: str, site: str=None, src: str=None, args_dict: Union[str, dict
     temp_file = None
 
     _site = site and isinstance(site, str)
-    _src = src and isinstance(site, str)
+    _src = src and isinstance(src, str)
     if (_site and _src) or not (_site or _src):
         raise PyppdfError('Only one from site or src args must be non empty str.')
     elif _src:
@@ -129,14 +141,23 @@ def save_pdf(out: str, site: str=None, src: str=None, args_dict: Union[str, dict
         raise e
 
 
-@click.command(help="Reads html document from stdin, converts it to pdf via " +
-                    "pyppeteer and writes to disk.")
-@click.argument('output_path', type=str)
-@click.option('-d', '--dict', 'args', type=str, default='{}',
-              help='Python code str that would be evaluated to the dictionary ' +
-                   'that is a pyppeteer options. Options are read from (optional) ' +
-                   'keys like this: "dict(goto=dict(timeout=100000), waitFor=(1,), ' +
-                   'pdf=dict(printBackground=True))" goto and pdf values are dict, ' +
-                   'waitFor value is a tuple.')
-def cli(output_path, args):
-    save_pdf(sys.stdin.read(), output_path, args)
+ARGS_DICT = docstr_defaults(save_pdf)
+
+
+@click.command(help=f"""Reads html document from stdin, converts it to pdf via
+pyppeteer and writes to disk.
+
+-d, --dict defaults:
+
+{re.sub(r'^ +', '', ARGS_DICT, flags=re.MULTILINE)}
+""")
+@click.argument('site', type=str, default=None, required=False)
+@click.option('-d', '--dict', 'args_dict', type=str, default=None,
+              help='Python code str that would be evaluated to the dictionary that is a ' +
+                   'pyppeteer functions options. Has predefined defaults.')
+@click.option('-u', '--upd', 'args_upd', type=str, default=None,
+              help="Same as --dict but this dict is recursively merged into --dict.")
+@click.option('-o', '--out', type=str, default='untitled.pdf', help='Output file path.')
+def cli(site, args_dict, args_upd, out):
+    kwargs = dict(site=site) if site else dict(src=sys.stdin.read())
+    save_pdf(out=out, args_dict=args_dict, args_upd=args_upd, **kwargs)
