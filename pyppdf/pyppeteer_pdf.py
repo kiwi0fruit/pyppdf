@@ -5,10 +5,9 @@ import os.path as p
 import pathlib
 import asyncio
 from typing import Union
-from litereval import litereval, merge
+from litereval import litereval, merge, get_args_kwargs
 # noinspection PyUnresolvedReferences
 from .patch_pyppeteer import patch_pyppeteer
-from .api_helper import get_args_kwargs
 from pyppeteer import launch
 
 

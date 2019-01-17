@@ -2,4 +2,3 @@
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 pandoc README.md -o README.rst
-python "./pyppdf/api_helper.py"
