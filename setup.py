@@ -37,5 +37,11 @@ setup(
     # keywords='sample setuptools development',
     packages=find_packages(exclude=['docs', 'tests']),
 
-    install_requires=['certifi', 'click', 'litereval>=0.0.3', 'pyppeteer>=0.0.25'],
+    install_requires=['certifi', 'click', 'litereval>=0.0.4', 'pyppeteer>=0.0.25'],
+
+    entry_points={
+        'console_scripts': [
+            'pyppdf=pyppdf.pyppeteer_pdf:cli',
+        ],
+    },
 )
