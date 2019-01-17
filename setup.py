@@ -37,5 +37,5 @@ setup(
     # keywords='sample setuptools development',
     packages=find_packages(exclude=['docs', 'tests']),
 
-    install_requires=['certifi', 'click', 'pyppeteer>=0.0.25'],
+    install_requires=['certifi', 'click', 'litereval', 'pyppeteer>=0.0.25'],
 )
