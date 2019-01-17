@@ -3,7 +3,8 @@ pyppdf: Pyppeteer PDF
 
 Prints html sites and files to pdf via pyppeteer (uses patched pyppeteer
 that by default downloads updated Chromium revision via https with
-certifi).
+certifi). I use it with
+`Pandoctools/Knitty <https://github.com/kiwi0fruit/pandoctools>`__.
 
 CLI
 ===
