@@ -41,3 +41,8 @@ def get_args_kwargs(name: str, args: dict, default=None) -> Tuple[
     else:
         return ([name] if isinstance(name, str) else list(name),
                 {})
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
