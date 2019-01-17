@@ -20,7 +20,8 @@ async def main(args: dict, url: str, output_file: str):
     launch_ = get_args_kwargs('launch', args, {})
     goto = get_args_kwargs('goto', args, {})
     goto[1].pop('url', None)
-    waitfor = get_args_kwargs('waitFor', args, None)
+    emulateMedia = get_args_kwargs('emulateMedia', args)
+    waitfor = get_args_kwargs('waitFor', args)
     pdf = get_args_kwargs('pdf', args, {})
     pdf[1].pop('path', None)
 
@@ -28,6 +29,9 @@ async def main(args: dict, url: str, output_file: str):
     page = await browser.newPage()
 
     await page.goto(url=url, *goto[0], **goto[1])
+
+    if emulateMedia[0] is not None:
+        await page.emulateMedia(*emulateMedia[0], **emulateMedia[1])
     if waitfor[0] is not None:
         await page.waitFor(*waitfor[0], **waitfor[1])
     await page.pdf(path=output_file, *pdf[0], **pdf[1])
@@ -57,7 +61,7 @@ def save_pdf(out: str, site: str=None, src: str=None, args_dict: Union[str, dict
 
     ``args_upd`` example that won't overwrite another options:
 
-    ``"{launch={args=['--no-sandbox', '--disable-setuid-sandbox']}, waitFor=[1000]}"``
+    ``"{launch={args=['--no-sandbox', '--disable-setuid-sandbox']}, emulateMedia="screen", waitFor=1000}"``
 
     Parameters
     ----------

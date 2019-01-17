@@ -31,16 +31,23 @@ def get_args_kwargs(name: str, args: dict, default=None) -> Tuple[
         tuple: *args, **kwargs
     """
     name = args.get(name, default)
+
+    def list_(args_) -> list:
+        if isinstance(args_, str):
+            return [args_]
+        try:
+            return list(args_)
+        except TypeError:
+            return [args_]
+
     if name is None:
         return None, None
     elif isinstance(name, dict):
         _args = name.get((), [])
         name.pop((), None)
-        return ([_args] if isinstance(_args, str) else list(_args),
-                name)
+        return list_(_args), name
     else:
-        return ([name] if isinstance(name, str) else list(name),
-                {})
+        return list_(name), {}
 
 
 if __name__ == "__main__":
