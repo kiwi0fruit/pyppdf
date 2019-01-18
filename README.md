@@ -57,7 +57,7 @@ def save_pdf(output_file: str=None, site: str=None, src: str=None,
              temp: bool=False) -> Union[str, None]:
     """
     Converts html document to pdf via pyppeteer
-    and writes to disk.
+    and writes to disk (or returns base64 encoded str of pdf).
 
     ``args_dict`` affect the following methods
     (only the last name should be used): ``pyppeteer.launch``, ``page.goto``,
@@ -87,13 +87,14 @@ def save_pdf(output_file: str=None, site: str=None, src: str=None,
     Parameters
     ----------
     output_file :
-        path to write pdf to
+        Path to write pdf to.
+        If None then returns returns base64 encoded str of pdf.
     site :
-        site address or html document file path
-        (site has priority over src)
+        Site address or html document file path
+        (site has priority over src).
     src :
         html document file source
-        (site has priority over src)
+        (site has priority over src).
     args_dict :
         Options that govern conversion.
         dict with pyppeteer kwargs or Python code str that would
