@@ -43,21 +43,24 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         dict with keys dedicated for pyppeteer functions used.
         See save_pdf for more details.
     url :
-        Site address or html document file path
-        (url, that can also be set in args, has priority over html).
+        Site address or html document file path (url - that by the
+        way can also be set in args - has priority over html).
     html :
         html document file source
     output_file :
-        Path to save pdf. If None then returns bytes of pdf.
+        Path to save pdf
     goto :
         One of:
         >>> # ('url', 'setContent', 'temp', 'data-text-html')
         >>> #
-        >>> # Choose page.goto behaviour. By default pyppdf tries 'url' mode then 'setContent' mode.
-        >>> # 'url' works only if site arg was provided or {goto={url=<...>}} was set in the merged args.
-        >>> # 'setContent' (without page.goto), 'temp' (temp file) and 'data-text-html' work only with
-        >>> # stdin input. 'setContent' and 'data-text-html' presumably do not support some remote
-        >>> # content. I have bugs with the last one when: page.goto(f'data:text/html,{html}')
+        >>> # Choose page.goto behaviour. By default pyppdf tries 'url' mode
+        >>> # then 'setContent' mode. 'url' works only if url (PAGE) arg was
+        >>> # provided or {goto={url=<...>}} was set in the merged args.
+        >>> # 'setContent' (works without page.goto), 'temp' (temp file) and
+        >>> # 'data-text-html' work only with stdin input. 'setContent' and
+        >>> # 'data-text-html' presumably do not support some remote
+        >>> # content. I have bugs with the last one when:
+        >>> # page.goto(f'data:text/html,{html}')
         >>> #
     dir_ :
         Directory for goto temp mode.
@@ -142,10 +145,11 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     Converts html document to pdf via pyppeteer
     and writes to disk if asked. Also returns bytes of pdf.
 
-    ``args_dict`` affect the following methods (only the last name should be used):
-    ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``, ``page.waitFor``, ``page.pdf``,
-    ``page.waitForNavigation``.
-    See: https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+    ``args_dict`` affect the following methods that are used during
+    conversion (only the last name should be used):
+    ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``,
+    ``page.waitFor``, ``page.pdf``, ``page.waitForNavigation``. See:
+     https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
     ``args_dict`` default value:
 
@@ -155,23 +159,25 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     >>> #               bottom='1in', left='1in'},}}
     >>> #
 
-    ``args_upd`` example that won't overwrite other options:
+    ``args_upd`` examples that won't overwrite other options:
 
-    ``"{launch={args=['--no-sandbox', '--disable-setuid-sandbox']}, emulateMedia="screen", waitFor=1000}"``
+    * ``"{launch={args=['--no-sandbox', '--disable-setuid-sandbox']}}``
+    *  ``"{emulateMedia="screen", waitFor=1000}"``
 
-    ``args_dict`` formats for ``*args`` and ``**kwargs`` for functions:
+    Formats for **values** of the ``args_dict``:
+    ``*args`` and ``**kwargs`` for functions:
 
     * ``{(): (arg1, arg2), kwarg1=val1, kwarg2=val2}``
-    * ``[arg1, arg2]`` or ``(arg1, arg2)``
-    * ``{kwarg1=val1, kwarg2=val2}``
-    * ``{foo=None}`` means that ``'foo'`` key is not used
-      (same as if it was absent).
+      Special key for positional args,
+    * ``[arg1, arg2]`` or ``(arg1, arg2)`` Positional only,
+    * If value in the **root**  ``args_dict`` is None
+      (like ``{foo=None}``) it later means that ``'foo'`` key is not used
+      (same as if it was absent in the **root** dict).
 
     Parameters
     ----------
     output_file :
         Path to write pdf to.
-        If None then returns returns base64 encoded str of pdf.
     url :
         Page URL address or html document file path
         (url has priority over html).
@@ -185,9 +191,9 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
         If None then default values are used.
         Supports extended dict syntax: {foo=100, bar='yes'}.
     args_upd :
-        dict with *additional* pyppeteer kwargs or Python code str that would
-        be "litereval" evaluated to the dictionary.
-        This dict would be recursively merged with args_dict.
+        dict with *additional* pyppeteer kwargs or Python code str
+        that would be "litereval" evaluated to the dictionary.
+        This dict would be recursively merged into args_dict.
     goto :
         Same as in 'main' function.
     dir_ :
@@ -220,28 +226,31 @@ GOTO_HELP = docstr_defaults(main, 1)
 @click.command(help=f"""Reads html document, converts it to pdf via
 pyppeteer and writes to disk (or writes base64 encoded pdf to stdout).
 
-PAGE is an URL or a common file path, pyppdf reads from stdin if PAGE is not set.
+PAGE is an URL or a common file path, pyppdf reads from stdin if PAGE
+is not set.
 
 -a, --args defaults:
 
 {re.sub(r'^ +', '', ARGS_DICT, flags=re.MULTILINE)}
 
-They affect the following pyppeteer methods (only the last name should be used):
-pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor, page.pdf, page.waitForNavigation. See:
+They affect the following pyppeteer methods (only the last name should
+be used):  pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor,
+page.pdf, page.waitForNavigation. See:
 
 https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 """)
 @click.argument('page', type=str, default=None, required=False)
 @click.option('-a', '--args', 'args_dict', type=str, default=None,
-              help='Python code str that would be evaluated to the dictionary that is a ' +
-                   'pyppeteer functions options. Has predefined defaults.')
+              help='Python code str that would be evaluated to the dictionary ' +
+                   'that is a pyppeteer functions options. Has predefined defaults.')
 @click.option('-u', '--upd', 'args_upd', type=str, default=None,
               help="Same as --args dict but --upd dict is recursively merged into --args.")
 @click.option('-o', '--out', type=str, default=None,
               help='Output file path. If not set then pyppdf writes base64 encoded pdf to stdout.')
 @click.option('-d', '--dir', 'dir_', type=str, default=None,
               help="Directory for '--goto temp' mode. Has priority over dir of the --out")
-@click.option('-g', '--goto', type=click.Choice(list(GOTO)), default=None, help=GOTO_HELP)
+@click.option('-g', '--goto', type=click.Choice(list(GOTO)), default=None,
+              help=GOTO_HELP.replace('\r', '').replace('\n', ''))
 def cli(page, args_dict, args_upd, out, dir_, goto):
     url, html = (page, None) if page else (None, sys.stdin.read())
     ret = save_pdf(output_file=out, args_dict=args_dict, args_upd=args_upd,
