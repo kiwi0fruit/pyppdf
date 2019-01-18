@@ -74,16 +74,12 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
             return 'url'
         elif html and (not goto or goto == 'setContent'):
             return 'setContent'
-        elif html and output_file and (not goto or goto == 'temp'):
+        elif html and (goto == 'temp') and output_file:
             return 'temp'
-        elif html and goto == 'data-text-html':
+        elif html and (goto == 'data-text-html'):
             return 'data-text-html'
-        elif url:
-            return 'url'
-        elif html:
-            return 'setContent'
         else:
-            raise PyppdfError('Either url or html arg should be set.')
+            raise PyppdfError('Incompatible goto or neither url nor html args were set.')
 
     goto = get_goto()
     browser = await launch(*_launch.args, **_launch.kwargs)
@@ -127,7 +123,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         raise e
 
 
-def save_pdf(output_file: str=None, site: str=None, src: str=None,
+def save_pdf(output_file: str=None, url: str=None, html: str=None,
              args_dict: Union[str, dict]=None,
              args_upd: Union[str, dict]=None,
              goto: str=None) -> Union[str, None]:
@@ -164,12 +160,12 @@ def save_pdf(output_file: str=None, site: str=None, src: str=None,
     output_file :
         Path to write pdf to.
         If None then returns returns base64 encoded str of pdf.
-    site :
-        Site address or html document file path
-        (site has priority over src).
-    src :
+    url :
+        Page URL address or html document file path
+        (url has priority over html).
+    html :
         html document file source
-        (site has priority over src).
+        (url has priority over html).
     args_dict :
         Options that govern conversion.
         dict with pyppeteer kwargs or Python code str that would
@@ -199,16 +195,14 @@ def save_pdf(output_file: str=None, site: str=None, src: str=None,
     if output_file:
         output_file = p.abspath(p.expandvars(p.expanduser(output_file)))
 
-    url, html = None, None
-    if site:
-        if p.isfile(site):
-            url = pathlib.Path(site).as_uri()
-        else:
-            url = site
-    elif src:
-        html = src
+    if url:
+        html = None
+        if p.isfile(url):
+            url = pathlib.Path(url).as_uri()
+    elif html:
+        url = None
     else:
-        raise PyppdfError('Either site or src arg should be set.')
+        raise PyppdfError('Either url or html arg should be set.')
 
     bytes_pdf = asyncio.get_event_loop().run_until_complete(
         main(args=args_dict, url=url, html=html, output_file=output_file, goto=goto)
@@ -226,7 +220,7 @@ GOTO_HELP = docstr_defaults(main, 1)
 @click.command(help=f"""Reads html document, converts it to pdf via
 pyppeteer and writes to disk (or writes base64 encoded pdf to stdout).
 
-SITE is a site url of a file path, pyppdf reads from stdin if SITE is not set.
+PAGE is an URL or a common file path, pyppdf reads from stdin if PAGE is not set.
 
 -a, --args defaults:
 
@@ -237,7 +231,7 @@ pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor, page.pdf. See:
 
 https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 """)
-@click.argument('site', type=str, default=None, required=False)
+@click.argument('page', type=str, default=None, required=False)
 @click.option('-a', '--args', 'args_dict', type=str, default=None,
               help='Python code str that would be evaluated to the dictionary that is a ' +
                    'pyppeteer functions options. Has predefined defaults.')
@@ -246,9 +240,9 @@ https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 @click.option('-o', '--out', type=str, default=None,
               help='Output file path. If not set then pyppdf writes base64 encoded pdf to stdout.')
 @click.option('-g', '--goto', type=click.Choice(list(GOTO)), default=None, help=GOTO_HELP)
-def cli(site, args_dict, args_upd, out, goto):
-    kwargs = dict(site=site) if site else dict(src=sys.stdin.read())
+def cli(page, args_dict, args_upd, out, goto):
+    url, html = (page, None) if page else (None, sys.stdin.read())
     ret = save_pdf(output_file=out, args_dict=args_dict, args_upd=args_upd,
-                   goto=goto, **kwargs)
+                   goto=goto, url=url, html=html)
     if ret:
         sys.stdout.write(ret)
