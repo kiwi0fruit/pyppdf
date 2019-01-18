@@ -65,8 +65,11 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
     _launch = get_args('launch', args, {})
     _goto = get_args('goto', args, {})
     url = _goto.kwargs.pop('url', url)
+    # noinspection PyPep8Naming
     emulateMedia = get_args('emulateMedia', args)
+    # noinspection PyPep8Naming
     waitForNavigation = get_args('waitForNavigation', args)
+    # noinspection PyPep8Naming
     waitFor = get_args('waitFor', args)
     pdf = get_args('pdf', args, {})
     if output_file:
@@ -75,7 +78,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
             dir_ = p.dirname(output_file)
         pdf.kwargs.setdefault('path', output_file)
 
-    temp_file = None
+    temp_file = ''
 
     def get_url():
         nonlocal temp_file
