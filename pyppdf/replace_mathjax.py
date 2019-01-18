@@ -16,7 +16,9 @@ def main():
     kwargs = {}
     if len(sys.argv) > 1:
         if sys.argv[1].lower() == '--help':
-            print('Replaces MathJax script section with URL only script. First arg is optional custom MathJax URL.')
+            print('Replaces MathJax script section with URL only script. ' +
+                  'First arg is optional custom MathJax URL. ' +
+                  'Reads from stdin and writes to stdout.')
             return
         else:
             kwargs = dict(mathjax_url=sys.argv[1])
