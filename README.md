@@ -2,7 +2,7 @@
 
 Prints html sites and files to pdf via pyppeteer (uses patched pyppeteer that by default downloads updated Chromium revision via https with certifi). I use it with  [Pandoctools/Knitty](https://github.com/kiwi0fruit/pandoctools).
 
-Pyppeteer is a Python port of the Puppeteer.
+Pyppeteer is a Python port of the Puppeteer. pyppdf command line interface is built with the help of [litereval](https://github.com/kiwi0fruit/litereval) and click.
 
 
 # CLI
