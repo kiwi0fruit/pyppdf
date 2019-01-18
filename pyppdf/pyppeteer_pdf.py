@@ -68,40 +68,39 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
     if output_file:
         pdf.kwargs.setdefault('path', output_file)
 
-    def get_goto():
+    temp_file = None
+
+    def get_url():
+        nonlocal temp_file
         if url and (not goto or goto == 'url'):
-            return 'url'
+            return url
+
         elif html and (not goto or goto == 'setContent'):
-            return 'setContent'
+            return None
+
         elif html and (goto == 'temp') and output_file:
-            return 'temp'
+            _temp_file = p.join(p.dirname(output_file),
+                                    f'__temp__{p.basename(output_file)}.html')
+            _url = pathlib.Path(_temp_file).as_uri()
+            print(html, file=open(_temp_file, 'w', encoding='utf-8'))
+            temp_file = _temp_file
+            return _url
+
         elif html and (goto == 'data-text-html'):
-            return 'data-text-html'
+            return f'data:text/html,{html}'
+
         else:
             raise PyppdfError('Incompatible goto or neither url nor html args were set.')
 
-    goto = get_goto()
+    url = get_url()
     browser = await launch(*_launch.args, **_launch.kwargs)
-    temp_file = None
 
     try:
         page = await browser.newPage()
-        if goto == 'setContent':
-            await page.setContent(html)
-        else:
-            if goto == 'url':
-                pass
-            elif goto == 'data-text-html':
-                url = f'data:text/html,{html}'
-            elif goto == 'temp':
-                _temp_file = p.join(p.dirname(output_file),
-                                    f'__temp__{p.basename(output_file)}.html')
-                print(html, file=open(_temp_file, 'w', encoding='utf-8'))
-                temp_file = _temp_file
-                url = pathlib.Path(temp_file).as_uri()
-            else:
-                raise PyppdfError('Unknown bug')
+        if url:
             await page.goto(url, *_goto.args, **_goto.kwargs)
+        else:
+            await page.setContent(html)
 
         if emulatemedia.args is not None:
             await page.emulateMedia(*emulatemedia.args, **emulatemedia.kwargs)
