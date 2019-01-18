@@ -2,6 +2,8 @@
 
 Prints html sites and files to pdf via pyppeteer (uses patched pyppeteer that by default downloads updated Chromium revision via https with certifi). I use it with  [Pandoctools/Knitty](https://github.com/kiwi0fruit/pandoctools).
 
+Pyppeteer is a Python port of the Puppeteer.
+
 
 # CLI
 
