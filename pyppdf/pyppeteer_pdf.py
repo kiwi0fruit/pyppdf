@@ -32,7 +32,7 @@ def docstr_defaults(func, i: int):
 
 
 async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
-               goto: str=None) -> Union[bytes, None]:
+               goto: str=None, dir_: str=None) -> Union[bytes, None]:
     """
     Returns bytes of pdf or None.
 
@@ -58,6 +58,8 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         >>> # stdin input. 'setContent' and 'data-text-html' presumably do not support some remote
         >>> # content. I have bugs with the last one when: page.goto(f'data:text/html,{html}')
         >>> #
+    dir_ :
+        Directory for goto temp mode.
     """
     _launch = get_args('launch', args, {})
     _goto = get_args('goto', args, {})
@@ -74,13 +76,11 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         nonlocal temp_file
         if url and (not goto or goto == 'url'):
             return url
-
         elif html and (not goto or goto == 'setContent'):
             return None
 
-        elif html and (goto == 'temp') and output_file:
-            _temp_file = p.join(p.dirname(output_file),
-                                    f'__temp__{p.basename(output_file)}.html')
+        elif html and (goto == 'temp') and dir_:
+            _temp_file = p.join(dir_, '__temp__.html')
             _url = pathlib.Path(_temp_file).as_uri()
             print(html, file=open(_temp_file, 'w', encoding='utf-8'))
             temp_file = _temp_file
@@ -88,9 +88,11 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
 
         elif html and (goto == 'data-text-html'):
             return f'data:text/html,{html}'
-
         else:
-            raise PyppdfError('Incompatible goto or neither url nor html args were set.')
+            raise PyppdfError(
+                'Incompatible goto mode, or neither url nor html args were set.\n' +
+                f'goto: {goto}, dir_: {dir_}, url[:20]: {url[:20]}, html[:20]: {html[:20]}'
+            )
 
     url = get_url()
     browser = await launch(*_launch.args, **_launch.kwargs)
@@ -124,7 +126,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
 def save_pdf(output_file: str=None, url: str=None, html: str=None,
              args_dict: Union[str, dict]=None,
              args_upd: Union[str, dict]=None,
-             goto: str=None) -> Union[str, None]:
+             goto: str=None, dir_: str=None) -> Union[str, None]:
     """
     Converts html document to pdf via pyppeteer
     and writes to disk (or returns base64 encoded str of pdf).
@@ -174,8 +176,10 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
         dict with *additional* pyppeteer kwargs or Python code str that would
         be "litereval" evaluated to the dictionary.
         This dict would be recursively merged with args_dict.
-    goto:
+    goto :
         Same as in 'main' function.
+    dir_ :
+        Directory for goto temp mode.
     """
     if args_dict is None:
         args_dict = litereval(ARGS_DICT)
@@ -192,6 +196,8 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
 
     if output_file:
         output_file = p.abspath(p.expandvars(p.expanduser(output_file)))
+        if dir_ is None:
+            dir_ = p.dirname(output_file)
 
     if url:
         html = None
@@ -203,7 +209,8 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
         raise PyppdfError('Either url or html arg should be set.')
 
     bytes_pdf = asyncio.get_event_loop().run_until_complete(
-        main(args=args_dict, url=url, html=html, output_file=output_file, goto=goto)
+        main(args=args_dict, url=url, html=html,
+             output_file=output_file, goto=goto, dir_=dir_)
     )
     if bytes_pdf is not None:
         import base64
@@ -237,10 +244,12 @@ https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
               help="Same as --args dict but --upd dict is recursively merged into --args.")
 @click.option('-o', '--out', type=str, default=None,
               help='Output file path. If not set then pyppdf writes base64 encoded pdf to stdout.')
+@click.option('-d', '--dir', 'dir_', type=str, default=None,
+              help="Directory for '--goto temp' mode. Has priority over dir of the --out")
 @click.option('-g', '--goto', type=click.Choice(list(GOTO)), default=None, help=GOTO_HELP)
-def cli(page, args_dict, args_upd, out, goto):
+def cli(page, args_dict, args_upd, out, dir_, goto):
     url, html = (page, None) if page else (None, sys.stdin.read())
     ret = save_pdf(output_file=out, args_dict=args_dict, args_upd=args_upd,
-                   goto=goto, url=url, html=html)
+                   goto=goto, url=url, html=html, dir_=dir_)
     if ret:
         sys.stdout.write(ret)
