@@ -15,8 +15,10 @@ following:
 
 .. code:: bash
 
-   pandoc doc.md -t html --mathjax --standalone --self-contained |
-   pyppdf-replace-mathjax | 
+   echo "# Header
+   Text \$f(x)=x^2\$" |
+   pandoc -f markdown -t html --mathjax --standalone --self-contained |
+   pyppdf-replace-mathjax |
    pyppdf -o doc.pdf --goto temp
 
 Contents:
