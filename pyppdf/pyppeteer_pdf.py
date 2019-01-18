@@ -52,12 +52,11 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         One of:
         >>> # ('url', 'setContent', 'temp', 'data-text-html')
         >>> #
-        >>> # Choose page.goto behaviour. By default pyppdf tries modes in the listed order.
-        >>> # pyppdf uses default order if user set mode cannot be applied.
-        >>> # 'url' works only if site arg was provided or {goto={url=<...>}} was set in merged args.
+        >>> # Choose page.goto behaviour. By default pyppdf tries 'url' mode then 'setContent' mode.
+        >>> # 'url' works only if site arg was provided or {goto={url=<...>}} was set in the merged args.
         >>> # 'setContent' (without page.goto), 'temp' (temp file) and 'data-text-html' work only with
         >>> # stdin input. 'setContent' and 'data-text-html' presumably do not support some remote
-        >>> # content. I have bugs with the last one though: page.goto(f'data:text/html,{html}')
+        >>> # content. I have bugs with the last one when: page.goto(f'data:text/html,{html}')
         >>> #
     """
     _launch = get_args('launch', args, {})
