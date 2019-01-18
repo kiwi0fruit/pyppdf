@@ -35,19 +35,19 @@ Command line interface:
      f
 
    Options:
-     -a, --args TEXT               Python code str that would be evaluated to the
-                                   dictionary that is a pyppeteer functions
-                                   options. Has predefined defaults.
-     -u, --upd TEXT                Same as --args dict but --upd dict is
-                                   recursively merged into --args.
-     -o, --out TEXT                Output file path. If not set then writes
-                                   base64 encoded pdf to stdout.
-     -s, --self-contained BOOLEAN  Set when then there is no remote content.
-                                   Performance will be opitmized for no remote
-                                   content. Has priority over --temp.
-     -t, --temp BOOLEAN            Whether to use temp file in case of stdin
-                                   input (works only if --out is set).
-     --help                        Show this message and exit.
+     -a, --args TEXT       Python code str that would be evaluated to the
+                           dictionary that is a pyppeteer functions options. Has
+                           predefined defaults.
+     -u, --upd TEXT        Same as --args dict but --upd dict is recursively
+                           merged into --args.
+     -o, --out TEXT        Output file path. If not set then writes base64
+                           encoded pdf to stdout.
+     -s, --self-contained  Set when then there is no remote content. Performance
+                           will be opitmized for no remote content. Has priority
+                           over --temp.
+     -t, --temp            Whether to use temp file in case of stdin input (works
+                           only if --out is set).
+     --help                Show this message and exit.
 
 See `Pyppeteer
 methods <https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf>`__.

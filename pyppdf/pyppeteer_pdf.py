@@ -220,10 +220,10 @@ https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
               help="Same as --args dict but --upd dict is recursively merged into --args.")
 @click.option('-o', '--out', type=str, default=None,
               help='Output file path. If not set then writes base64 encoded pdf to stdout.')
-@click.option('-s', '--self-contained', type=bool, default=False,
+@click.option('-s', '--self-contained', is_flag=True, default=False,
               help='Set when then there is no remote content. ' +
                    'Performance will be opitmized for no remote content. Has priority over --temp.')
-@click.option('-t', '--temp', type=bool, default=False,
+@click.option('-t', '--temp', is_flag=True, default=False,
               help='Whether to use temp file in case of stdin input (works only if --out is set).')
 def cli(site, args_dict, args_upd, out, self_contained, temp):
     kwargs = dict(site=site) if site else dict(src=sys.stdin.read())
