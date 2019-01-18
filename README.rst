@@ -46,7 +46,7 @@ Command line interface:
                                    Performance will be opitmized for no remote
                                    content. Has priority over --temp.
      -t, --temp BOOLEAN            Whether to use temp file in case of stdin
-                                   input.
+                                   input (works only if --out is set).
      --help                        Show this message and exit.
 
 See `Pyppeteer
@@ -117,6 +117,7 @@ Python API
           Has priority over temp.
        temp :
            Whether to use temp file in case of src input and no site.
+           Works only if output_file is set.
        """
 
 .. code:: py

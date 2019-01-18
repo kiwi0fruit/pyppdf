@@ -143,6 +143,7 @@ def save_pdf(output_file: str=None, site: str=None, src: str=None,
        Has priority over temp.
     temp :
         Whether to use temp file in case of src input and no site.
+        Works only if output_file is set.
     """
     if args_dict is None:
         args_dict = litereval(ARGS_DICT)
@@ -169,7 +170,7 @@ def save_pdf(output_file: str=None, site: str=None, src: str=None,
     elif src:
         if self_contained:
             html = src
-        elif temp:
+        elif temp and output_file:
             temp_file = p.join(p.dirname(output_file),
                                f'__temp__{p.basename(output_file)}.html')
             url = pathlib.Path(temp_file).as_uri()
@@ -223,7 +224,7 @@ https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
               help='Set when then there is no remote content. ' +
                    'Performance will be opitmized for no remote content. Has priority over --temp.')
 @click.option('-t', '--temp', type=bool, default=False,
-              help='Whether to use temp file in case of stdin input.')
+              help='Whether to use temp file in case of stdin input (works only if --out is set).')
 def cli(site, args_dict, args_upd, out, self_contained, temp):
     kwargs = dict(site=site) if site else dict(src=sys.stdin.read())
     ret = save_pdf(output_file=out, args_dict=args_dict, args_upd=args_upd,
