@@ -32,9 +32,9 @@ def docstr_defaults(func, i: int):
 
 
 async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
-               goto: str=None, dir_: str=None) -> Union[bytes, None]:
+               goto: str=None, dir_: str=None) -> bytes:
     """
-    Returns bytes of pdf or None.
+    Returns bytes of pdf.
 
     Parameters
     ----------
@@ -114,8 +114,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         if temp_file:
             os.remove(temp_file)
         await browser.close()
-        if not ('path' in pdf.kwargs):
-            return ret
+        return ret
     except Exception as e:
         if temp_file:
             os.remove(temp_file)
@@ -126,10 +125,10 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
 def save_pdf(output_file: str=None, url: str=None, html: str=None,
              args_dict: Union[str, dict]=None,
              args_upd: Union[str, dict]=None,
-             goto: str=None, dir_: str=None) -> Union[str, None]:
+             goto: str=None, dir_: str=None) -> bytes:
     """
     Converts html document to pdf via pyppeteer
-    and writes to disk (or returns base64 encoded str of pdf).
+    and writes to disk if asked. Also returns bytes of pdf.
 
     ``args_dict`` affect the following methods (only the last name should be used):
     ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``, ``page.waitFor``, ``page.pdf``.
@@ -208,14 +207,11 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     else:
         raise PyppdfError('Either url or html arg should be set.')
 
-    bytes_pdf = asyncio.get_event_loop().run_until_complete(
+    return asyncio.get_event_loop().run_until_complete(
         main(args=args_dict, url=url, html=html,
              output_file=output_file, goto=goto, dir_=dir_)
     )
-    if bytes_pdf is not None:
-        import base64
-        return 'data:application/pdf;base64,' + base64.b64encode(bytes_pdf).decode("utf-8")
-
+    
 
 ARGS_DICT = docstr_defaults(save_pdf, 0)
 GOTO = litereval(docstr_defaults(main, 0))
@@ -251,5 +247,7 @@ def cli(page, args_dict, args_upd, out, dir_, goto):
     url, html = (page, None) if page else (None, sys.stdin.read())
     ret = save_pdf(output_file=out, args_dict=args_dict, args_upd=args_upd,
                    goto=goto, url=url, html=html, dir_=dir_)
-    if ret:
-        sys.stdout.write(ret)
+    if not out:
+        import base64
+        sys.stdout.write('data:application/pdf;base64,' + 
+                         base64.b64encode(ret).decode("utf-8"))
