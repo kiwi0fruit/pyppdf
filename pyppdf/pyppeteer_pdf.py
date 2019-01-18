@@ -183,12 +183,12 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     elif isinstance(args_dict, str):
         args_dict = litereval(args_dict)
     if not isinstance(args_dict, dict):
-        raise TypeError(f'Invalid pyppeteer `args_dict` arg (should be a dict): {args_dict}')
+        raise TypeError(f'Invalid pyppdf `args_dict` arg (should be a dict): {args_dict}')
 
     if args_upd is not None:
         args_upd = litereval(args_upd) if isinstance(args_upd, str) else args_upd
         if not isinstance(args_upd, dict):
-            raise TypeError(f'Invalid pyppeteer `args_upd` arg (should be a dict): {args_upd}')
+            raise TypeError(f'Invalid pyppdf `args_upd` arg (should be a dict): {args_upd}')
         args_dict = merge(args_upd, args_dict, copy=True)
 
     if output_file:
