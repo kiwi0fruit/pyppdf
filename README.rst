@@ -17,11 +17,13 @@ Command line interface:
 
    Usage: pyppdf [OPTIONS] [SITE]
 
-     Reads html document from stdin, converts it to pdf via pyppeteer and
-     writes to disk (or writes base64 encoded pdf to stdout). SITE is optional
-     and it's a site url of a file path.
+     Reads html document, converts it to pdf via pyppeteer and writes to disk
+     (or writes base64 encoded pdf to stdout).
 
-     -d, --dict defaults:
+     SITE is a site url of a file path, pyppdf reads from stdin if SITE is not
+     set.
+
+     -a, --args defaults:
 
      {goto={waitUntil='networkidle0', timeout=100000}, pdf={width='8.27in',
      printBackground=True, margin={top='1in', right='1in', bottom='1in',
@@ -35,19 +37,31 @@ Command line interface:
      f
 
    Options:
-     -a, --args TEXT       Python code str that would be evaluated to the
-                           dictionary that is a pyppeteer functions options. Has
-                           predefined defaults.
-     -u, --upd TEXT        Same as --args dict but --upd dict is recursively
-                           merged into --args.
-     -o, --out TEXT        Output file path. If not set then writes base64
-                           encoded pdf to stdout.
-     -s, --self-contained  Set when then there is no remote content. Performance
-                           will be opitmized for no remote content. Has priority
-                           over --temp.
-     -t, --temp            Whether to use temp file in case of stdin input (works
-                           only if --out is set).
-     --help                Show this message and exit.
+     -a, --args TEXT                 Python code str that would be evaluated to
+                                     the dictionary that is a pyppeteer functions
+                                     options. Has predefined defaults.
+     -u, --upd TEXT                  Same as --args dict but --upd dict is
+                                     recursively merged into --args.
+     -o, --out TEXT                  Output file path. If not set then pyppdf
+                                     writes base64 encoded pdf to stdout.
+     -g, --goto [url|setContent|temp|data-text-html]
+                                     Choose page.goto behaviour. By default
+                                     pyppdf tries modes in the listed order.
+                                     pyppdf uses default order if user set mode
+                                     cannot be applied.
+                                     'url' works only if site
+                                     arg was provided or {goto={url=<...>}} was
+                                     set in merged args.
+                                     'setContent' (without
+                                     page.goto), 'temp' (temp file) and 'data-
+                                     text-html' work only with
+                                     stdin input.
+                                     'setContent' and 'data-text-html' presumably
+                                     do not support some remote
+                                     content. I have
+                                     bugs with the last one though:
+                                     page.goto(f'data:text/html,{html}')
+     --help                          Show this message and exit.
 
 See `Pyppeteer
 methods <https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf>`__.
@@ -60,16 +74,14 @@ Python API
    def save_pdf(output_file: str=None, site: str=None, src: str=None,
                 args_dict: Union[str, dict]=None,
                 args_upd: Union[str, dict]=None,
-                self_contained: bool=False,
-                temp: bool=False) -> Union[str, None]:
+                goto: str=None) -> Union[str, None]:
        """
        Converts html document to pdf via pyppeteer
        and writes to disk (or returns base64 encoded str of pdf).
 
-       ``args_dict`` affect the following methods
-       (only the last name should be used): ``pyppeteer.launch``, ``page.goto``,
-       ``page.emulateMedia``, ``page.waitFor``, ``page.pdf``. See:
-         https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+       ``args_dict`` affect the following methods (only the last name should be used):
+       ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``, ``page.waitFor``, ``page.pdf``.
+       See: https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
        ``args_dict`` default value:
 
@@ -112,20 +124,16 @@ Python API
            dict with *additional* pyppeteer kwargs or Python code str that would
            be "litereval" evaluated to the dictionary.
            This dict would be recursively merged with args_dict.
-       self_contained :
-          If True then there is no remote content. Performance will be opitmized if no remote content.
-          Has priority over temp.
-       temp :
-           Whether to use temp file in case of src input and no site.
-           Works only if output_file is set.
+       goto:
+           Same as in 'main' function.
        """
 
 .. code:: py
 
    async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
-                  self_contained: bool=False) -> Union[bytes, None]:
+                  goto: str=None) -> Union[bytes, None]:
        """
-       Returns bytes of pdf or None
+       Returns bytes of pdf or None.
 
        Parameters
        ----------
@@ -134,12 +142,20 @@ Python API
            dict with keys dedicated for pyppeteer functions used.
        url :
            Site address or html document file path
-           (url, that can also be set in args, has priority over src).
+           (url, that can also be set in args, has priority over html).
        html :
            html document file source
        output_file :
            Path to save pdf. If None then returns bytes of pdf.
-       self_contained :
-           If True then there is no remote content.
-           Performance will be opitmized if no remote content.
+       goto :
+           One of:
+           >>> # ('url', 'setContent', 'temp', 'data-text-html')
+           >>> #
+           >>> # Choose page.goto behaviour. By default pyppdf tries modes in the listed order.
+           >>> # pyppdf uses default order if user set mode cannot be applied.
+           >>> # 'url' works only if site arg was provided or {goto={url=<...>}} was set in merged args.
+           >>> # 'setContent' (without page.goto), 'temp' (temp file) and 'data-text-html' work only with
+           >>> # stdin input. 'setContent' and 'data-text-html' presumably do not support some remote
+           >>> # content. I have bugs with the last one though: page.goto(f'data:text/html,{html}')
+           >>> #
        """
