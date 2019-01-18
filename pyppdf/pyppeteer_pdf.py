@@ -104,7 +104,8 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         else:
             raise PyppdfError(
                 'Incompatible goto mode, or neither url nor html args were set.\n' +
-                f'goto: {goto}, dir_: {dir_}, url[:20]: {url[:20]}, html[:20]: {html[:20]}'
+                f'goto: {goto}, dir_: {dir_}, url[:20]: {url[:20] if url else url}, ' +
+                f'html[:20]: {html[:20] if html else html}'
             )
 
     url = get_url()
