@@ -42,6 +42,7 @@ setup(
     entry_points={
         'console_scripts': [
             'pyppdf=pyppdf.pyppeteer_pdf:cli',
+            'pyppdf-replace-mathjax=pyppdf.replace_mathjax:main',
         ],
     },
 )

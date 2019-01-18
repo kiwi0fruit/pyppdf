@@ -4,6 +4,12 @@ Prints html sites and files to pdf via pyppeteer (uses patched pyppeteer that by
 
 Pyppeteer is a Python port of the Puppeteer. pyppdf command line interface is built with the help of [litereval](https://github.com/kiwi0fruit/litereval) and click.
 
+At the moment recommended settings when reading from stdin are following:
+
+```bash
+pandoc doc.md -t html --mathjax | pyppdf -o doc.pdf --goto temp
+```
+
 
 # CLI
 
