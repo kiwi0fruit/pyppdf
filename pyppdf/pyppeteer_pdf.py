@@ -65,8 +65,9 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
     _launch = get_args('launch', args, {})
     _goto = get_args('goto', args, {})
     url = _goto.kwargs.pop('url', url)
-    emulatemedia = get_args('emulateMedia', args)
-    waitfor = get_args('waitFor', args)
+    emulateMedia = get_args('emulateMedia', args)
+    waitForNavigation = get_args('waitForNavigation', args)
+    waitFor = get_args('waitFor', args)
     pdf = get_args('pdf', args, {})
     if output_file:
         output_file = p.abspath(p.expandvars(p.expanduser(output_file)))
@@ -110,10 +111,12 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         else:
             await page.setContent(html)
 
-        if emulatemedia.args is not None:
-            await page.emulateMedia(*emulatemedia.args, **emulatemedia.kwargs)
-        if waitfor.args is not None:
-            await page.waitFor(*waitfor.args, **waitfor.kwargs)
+        if emulateMedia.args is not None:
+            await page.emulateMedia(*emulateMedia.args, **emulateMedia.kwargs)
+        if waitForNavigation.args is not None:
+            await page.waitForNavigation(*waitForNavigation.args, **waitForNavigation.kwargs)
+        if waitFor.args is not None:
+            await page.waitFor(*waitFor.args, **waitFor.kwargs)
 
         ret = await page.pdf(**pdf.kwargs)
 
@@ -137,7 +140,8 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     and writes to disk if asked. Also returns bytes of pdf.
 
     ``args_dict`` affect the following methods (only the last name should be used):
-    ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``, ``page.waitFor``, ``page.pdf``.
+    ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``, ``page.waitFor``, ``page.pdf``,
+    ``page.waitForNavigation``.
     See: https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
     ``args_dict`` default value:
@@ -220,7 +224,7 @@ PAGE is an URL or a common file path, pyppdf reads from stdin if PAGE is not set
 {re.sub(r'^ +', '', ARGS_DICT, flags=re.MULTILINE)}
 
 They affect the following pyppeteer methods (only the last name should be used):
-pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor, page.pdf. See:
+pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor, page.pdf, page.waitForNavigation. See:
 
 https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 """)
