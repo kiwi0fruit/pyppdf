@@ -199,7 +199,8 @@ ARGS_DICT = docstr_defaults(save_pdf)
 
 
 @click.command(help=f"""Reads html document from stdin, converts it to pdf via
-pyppeteer and writes to disk. SITE is optional and it's a site url of a file path.
+pyppeteer and writes to disk (or writes base64 encoded pdf to stdout).
+SITE is optional and it's a site url of a file path.
 
 -d, --dict defaults:
 
@@ -217,7 +218,7 @@ https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 @click.option('-u', '--upd', 'args_upd', type=str, default=None,
               help="Same as --args dict but --upd dict is recursively merged into --args.")
 @click.option('-o', '--out', type=str, default=None,
-              help='Output file path. If not set then writes to stdout.')
+              help='Output file path. If not set then writes base64 encoded pdf to stdout.')
 @click.option('-s', '--self-contained', type=bool, default=False,
               help='Set when then there is no remote content. ' +
                    'Performance will be opitmized for no remote content. Has priority over --temp.')

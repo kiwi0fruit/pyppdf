@@ -18,7 +18,8 @@ Command line interface:
    Usage: pyppdf [OPTIONS] [SITE]
 
      Reads html document from stdin, converts it to pdf via pyppeteer and
-     writes to disk. SITE is optional and it's a site url of a file path.
+     writes to disk (or writes base64 encoded pdf to stdout). SITE is optional
+     and it's a site url of a file path.
 
      -d, --dict defaults:
 
@@ -39,8 +40,8 @@ Command line interface:
                                    options. Has predefined defaults.
      -u, --upd TEXT                Same as --args dict but --upd dict is
                                    recursively merged into --args.
-     -o, --out TEXT                Output file path. If not set then writes to
-                                   stdout.
+     -o, --out TEXT                Output file path. If not set then writes
+                                   base64 encoded pdf to stdout.
      -s, --self-contained BOOLEAN  Set when then there is no remote content.
                                    Performance will be opitmized for no remote
                                    content. Has priority over --temp.
