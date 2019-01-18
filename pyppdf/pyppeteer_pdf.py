@@ -61,7 +61,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
             await page.waitFor(*waitfor.args, **waitfor.kwargs)
 
         ret = await page.pdf(**pdf.kwargs)
-        if not ('path' in pdf):
+        if not ('path' in pdf.kwargs):
             return ret
     except Exception as e:
         await browser.close()
