@@ -6,7 +6,7 @@ import pathlib
 import asyncio
 import re
 from typing import Union
-from litereval import litereval, merge, get, args_kwargs
+from litereval import litereval, merge, get_args
 # noinspection PyUnresolvedReferences
 from .patch_pyppeteer import patch_pyppeteer
 from pyppeteer import launch
@@ -16,27 +16,56 @@ class PyppdfError(Exception):
     pass
 
 
-async def main(args: dict, url: str, output_file: str):
-    launch_ = args_kwargs(get('launch', args, {}))
-    goto = args_kwargs(get('goto', args, {}))
-    goto[1].pop('url', None)
-    emulate_media = args_kwargs(get('emulateMedia', args))
-    waitfor = args_kwargs(get('waitFor', args))
-    pdf = args_kwargs(get('pdf', args, {}))
-    pdf[1].pop('path', None)
+async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
+               self_contained: bool=False) -> Union[bytes, None]:
+    """
+    Returns bytes of pdf or None
 
-    browser = await launch(*launch_[0], **launch_[1])
-    page = await browser.newPage()
+    Parameters
+    ----------
+    args :
+        Pyppeteer options that govern conversion.
+        dict with keys dedicated for pyppeteer functions used.
+    url :
+        Site address or html document file path
+        (url, that can also be set in args, has priority over src).
+    html :
+        html document file source
+    output_file :
+        Path to save pdf. If None then returns bytes of pdf.
+    self_contained :
+        If True then there is no remote content.
+        Performance will be opitmized if no remote content.
+    """
+    _launch = get_args('launch', args, {})
+    goto = get_args('goto', args, {})
+    url = goto.kwargs.pop('url', url)
+    emulatemedia = get_args('emulateMedia', args)
+    waitfor = get_args('waitFor', args)
+    pdf = get_args('pdf', args, {})
+    if output_file:
+        pdf.kwargs.setdefault('path', output_file)
 
-    await page.goto(url, *goto[0], **goto[1])
+    browser = await launch(*_launch.args, **_launch.kwargs)
+    try:
+        page = await browser.newPage()
+        if self_contained and html:
+            await page.setContent(html)
+        else:
+            url = url if url else f'data:text/html,{html}'
+            await page.goto(url, *goto.args, **goto.kwargs)
 
-    if emulate_media[0] is not None:
-        await page.emulateMedia(*emulate_media[0], **emulate_media[1])
-    if waitfor[0] is not None:
-        await page.waitFor(*waitfor[0], **waitfor[1])
-    await page.pdf(path=output_file, **pdf[1])
+        if emulatemedia.args is not None:
+            await page.emulateMedia(*emulatemedia.args, **emulatemedia.kwargs)
+        if waitfor.args is not None:
+            await page.waitFor(*waitfor.args, **waitfor.kwargs)
 
-    await browser.close()
+        ret = await page.pdf(**pdf.kwargs)
+        if not ('path' in pdf):
+            return ret
+    except Exception as e:
+        await browser.close()
+        raise e
 
 
 def docstr_defaults(func):
@@ -54,9 +83,11 @@ def docstr_defaults(func):
         re.DOTALL).group(0))
 
 
-def save_pdf(out: str='untitled.pdf', site: str=None, src: str=None,
+def save_pdf(output_file: str=None, site: str=None, src: str=None,
              args_dict: Union[str, dict]=None,
-             args_upd: Union[str, dict]=None) -> None:
+             args_upd: Union[str, dict]=None,
+             self_contained: bool=False,
+             temp: bool=False) -> Union[str, None]:
     """
     Converts html document to pdf via pyppeteer
     and writes to disk.
@@ -88,14 +119,14 @@ def save_pdf(out: str='untitled.pdf', site: str=None, src: str=None,
 
     Parameters
     ----------
-    out :
+    output_file :
         path to write pdf to
     site :
         site address or html document file path
-        (only one from site or src must be defined)
+        (site has priority over src)
     src :
         html document file source
-        (only one from site or src must be defined)
+        (site has priority over src)
     args_dict :
         Options that govern conversion.
         dict with pyppeteer kwargs or Python code str that would
@@ -106,6 +137,11 @@ def save_pdf(out: str='untitled.pdf', site: str=None, src: str=None,
         dict with *additional* pyppeteer kwargs or Python code str that would
         be "litereval" evaluated to the dictionary.
         This dict would be recursively merged with args_dict.
+    self_contained :
+       If True then there is no remote content. Performance will be opitmized if no remote content.
+       Has priority over temp.
+    temp :
+        Whether to use temp file in case of src input and no site.
     """
     if args_dict is None:
         args_dict = litereval(ARGS_DICT)
@@ -120,29 +156,38 @@ def save_pdf(out: str='untitled.pdf', site: str=None, src: str=None,
             raise TypeError(f'Invalid pyppeteer `args_upd` arg (should be a dict): {args_upd}')
         args_dict = merge(args_upd, args_dict, copy=True)
 
-    output_file = p.abspath(p.expandvars(p.expanduser(out)))
-    temp_file = None
+    if output_file:
+        output_file = p.abspath(p.expandvars(p.expanduser(output_file)))
 
-    _site = site and isinstance(site, str)
-    _src = src and isinstance(src, str)
-    if (_site and _src) or not (_site or _src):
-        raise PyppdfError('Only one from site or src args must be non empty str.')
-    elif _src:
-        temp_file = p.join(p.dirname(output_file),
-                           f'__temp__{p.basename(output_file)}.html')
-        url = pathlib.Path(temp_file).as_uri()
-        print(src, file=open(temp_file, 'w', encoding='utf-8'))
-    elif p.isfile(site):
-        url = pathlib.Path(site).as_uri()
+    url, html, temp_file = None, None, None
+    if site:
+        if p.isfile(site):
+            url = pathlib.Path(site).as_uri()
+        else:
+            url = site
+    elif src:
+        if self_contained:
+            html = src
+        elif temp:
+            temp_file = p.join(p.dirname(output_file),
+                               f'__temp__{p.basename(output_file)}.html')
+            url = pathlib.Path(temp_file).as_uri()
+            print(src, file=open(temp_file, 'w', encoding='utf-8'))
+        else:
+            html = src
     else:
-        url = site
+        raise PyppdfError('Either site or src arg should be set.')
 
     try:
-        asyncio.get_event_loop().run_until_complete(
-            main(args_dict, url, output_file)
+        bytes_pdf = asyncio.get_event_loop().run_until_complete(
+            main(args=args_dict, url=url, html=html, output_file=output_file,
+                 self_contained=self_contained)
         )
         if temp_file:
             os.remove(temp_file)
+        if bytes_pdf is not None:
+            import base64
+            return 'data:application/pdf;base64,' + base64.b64encode(bytes_pdf).decode("utf-8")
     except Exception as e:
         if temp_file:
             os.remove(temp_file)
@@ -165,13 +210,21 @@ pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor, page.pdf. See:
 https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 """)
 @click.argument('site', type=str, default=None, required=False)
-@click.option('-d', '--dict', 'args_dict', type=str, default=None,
+@click.option('-a', '--args', 'args_dict', type=str, default=None,
               help='Python code str that would be evaluated to the dictionary that is a ' +
                    'pyppeteer functions options. Has predefined defaults.')
 @click.option('-u', '--upd', 'args_upd', type=str, default=None,
-              help="Same as --dict but --upd dict is recursively merged into --dict.")
-@click.option('-o', '--out', type=str, default='untitled.pdf',
-              help='Output file path. Default is "untitled.pdf"')
-def cli(site, args_dict, args_upd, out):
+              help="Same as --args dict but --upd dict is recursively merged into --args.")
+@click.option('-o', '--out', type=str, default=None,
+              help='Output file path. If not set then writes to stdout.')
+@click.option('-s', '--self-contained', type=bool, default=False,
+              help='Set when then there is no remote content. ' +
+                   'Performance will be opitmized for no remote content. Has priority over --temp.')
+@click.option('-t', '--temp', type=bool, default=False,
+              help='Whether to use temp file in case of stdin input.')
+def cli(site, args_dict, args_upd, out, self_contained, temp):
     kwargs = dict(site=site) if site else dict(src=sys.stdin.read())
-    save_pdf(out=out, args_dict=args_dict, args_upd=args_upd, **kwargs)
+    ret = save_pdf(output_file=out, args_dict=args_dict, args_upd=args_upd,
+                   self_contained=self_contained, temp=temp, **kwargs)
+    if ret:
+        sys.stdout.write(ret)

@@ -6,6 +6,8 @@ that by default downloads updated Chromium revision via https with
 certifi). I use it with
 `Pandoctools/Knitty <https://github.com/kiwi0fruit/pandoctools>`__.
 
+Pyppeteer is a Python port of the Puppeteer.
+
 CLI
 ===
 
@@ -28,16 +30,23 @@ Command line interface:
      used): pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor,
      page.pdf. See:
 
-     https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+     https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pd
+     f
 
    Options:
-     -d, --dict TEXT  Python code str that would be evaluated to the dictionary
-                      that is a pyppeteer functions options. Has predefined
-                      defaults.
-     -u, --upd TEXT   Same as --dict but --upd dict is recursively merged into
-                      --dict.
-     -o, --out TEXT   Output file path. Default is "untitled.pdf"
-     --help           Show this message and exit.
+     -a, --args TEXT               Python code str that would be evaluated to the
+                                   dictionary that is a pyppeteer functions
+                                   options. Has predefined defaults.
+     -u, --upd TEXT                Same as --args dict but --upd dict is
+                                   recursively merged into --args.
+     -o, --out TEXT                Output file path. If not set then writes to
+                                   stdout.
+     -s, --self-contained BOOLEAN  Set when then there is no remote content.
+                                   Performance will be opitmized for no remote
+                                   content. Has priority over --temp.
+     -t, --temp BOOLEAN            Whether to use temp file in case of stdin
+                                   input.
+     --help                        Show this message and exit.
 
 See `Pyppeteer
 methods <https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf>`__.
@@ -47,9 +56,11 @@ Python API
 
 ::
 
-   def save_pdf(out: str='untitled.pdf', site: str=None, src: str=None,
+   def save_pdf(output_file: str=None, site: str=None, src: str=None,
                 args_dict: Union[str, dict]=None,
-                args_upd: Union[str, dict]=None) -> None:
+                args_upd: Union[str, dict]=None,
+                self_contained: bool=False,
+                temp: bool=False) -> Union[str, None]:
        """
        Converts html document to pdf via pyppeteer
        and writes to disk.
@@ -81,14 +92,14 @@ Python API
 
        Parameters
        ----------
-       out :
+       output_file :
            path to write pdf to
        site :
            site address or html document file path
-           (only one from site or src must be defined)
+           (site has priority over src)
        src :
            html document file source
-           (only one from site or src must be defined)
+           (site has priority over src)
        args_dict :
            Options that govern conversion.
            dict with pyppeteer kwargs or Python code str that would
@@ -99,4 +110,33 @@ Python API
            dict with *additional* pyppeteer kwargs or Python code str that would
            be "litereval" evaluated to the dictionary.
            This dict would be recursively merged with args_dict.
+       self_contained :
+          If True then there is no remote content. Performance will be opitmized if no remote content.
+          Has priority over temp.
+       temp :
+           Whether to use temp file in case of src input and no site.
+       """
+
+.. code:: py
+
+   async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
+                  self_contained: bool=False) -> Union[bytes, None]:
+       """
+       Returns bytes of pdf or None
+
+       Parameters
+       ----------
+       args :
+           Pyppeteer options that govern conversion.
+           dict with keys dedicated for pyppeteer functions used.
+       url :
+           Site address or html document file path
+           (url, that can also be set in args, has priority over src).
+       html :
+           html document file source
+       output_file :
+           Path to save pdf. If None then returns bytes of pdf.
+       self_contained :
+           If True then there is no remote content.
+           Performance will be opitmized if no remote content.
        """
