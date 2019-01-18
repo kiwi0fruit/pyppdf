@@ -149,7 +149,7 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     ``args_dict`` affect the following methods that are used during
     conversion (only the last name should be used):
     ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``,
-    ``page.waitFor``, ``page.pdf``, ``page.waitForNavigation``. See:
+    ``page.waitForNavigation``, ``page.waitFor``, ``page.pdf``. See:
      https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
     ``args_dict`` default value:
@@ -235,8 +235,8 @@ is not set.
 {re.sub(r'^ +', '', ARGS_DICT, flags=re.MULTILINE)}
 
 They affect the following pyppeteer methods (only the last name should
-be used):  pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor,
-page.pdf, page.waitForNavigation. See:
+be used):  pyppeteer.launch, page.goto, page.emulateMedia, page.waitForNavigation,
+page.waitFor, page.pdf. See:
 
 https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 """)

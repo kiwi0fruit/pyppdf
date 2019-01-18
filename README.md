@@ -45,8 +45,8 @@ Usage: pyppdf [OPTIONS] [PAGE]
   left='1in'},}}
 
   They affect the following pyppeteer methods (only the last name should be
-  used):  pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor,
-  page.pdf, page.waitForNavigation. See:
+  used):  pyppeteer.launch, page.goto, page.emulateMedia,
+  page.waitForNavigation, page.waitFor, page.pdf. See:
 
   https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pd
   f
@@ -108,7 +108,7 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     ``args_dict`` affect the following methods that are used during
     conversion (only the last name should be used):
     ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``,
-    ``page.waitFor``, ``page.pdf``, ``page.waitForNavigation``. See:
+    ``page.waitForNavigation``, ``page.waitFor``, ``page.pdf``. See:
      https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
     ``args_dict`` default value:

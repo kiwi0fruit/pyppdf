@@ -56,8 +56,8 @@ Command line interface:
      left='1in'},}}
 
      They affect the following pyppeteer methods (only the last name should be
-     used):  pyppeteer.launch, page.goto, page.emulateMedia, page.waitFor,
-     page.pdf, page.waitForNavigation. See:
+     used):  pyppeteer.launch, page.goto, page.emulateMedia,
+     page.waitForNavigation, page.waitFor, page.pdf. See:
 
      https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pd
      f
@@ -121,7 +121,7 @@ Python API
        ``args_dict`` affect the following methods that are used during
        conversion (only the last name should be used):
        ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``,
-       ``page.waitFor``, ``page.pdf``, ``page.waitForNavigation``. See:
+       ``page.waitForNavigation``, ``page.waitFor``, ``page.pdf``. See:
         https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
        ``args_dict`` default value:
