@@ -41,6 +41,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
     args :
         Pyppeteer options that govern conversion.
         dict with keys dedicated for pyppeteer functions used.
+        See save_pdf for more details.
     url :
         Site address or html document file path
         (url, that can also be set in args, has priority over html).
@@ -68,6 +69,9 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
     waitfor = get_args('waitFor', args)
     pdf = get_args('pdf', args, {})
     if output_file:
+        output_file = p.abspath(p.expandvars(p.expanduser(output_file)))
+        if dir_ is None:
+            dir_ = p.dirname(output_file)
         pdf.kwargs.setdefault('path', output_file)
 
     temp_file = None
@@ -75,6 +79,8 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
     def get_url():
         nonlocal temp_file
         if url and (not goto or goto == 'url'):
+            if p.isfile(url):
+                return pathlib.Path(url).as_uri()
             return url
         elif html and (not goto or goto == 'setContent'):
             return None
@@ -192,20 +198,6 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
         if not isinstance(args_upd, dict):
             raise TypeError(f'Invalid pyppdf `args_upd` arg (should be a dict): {args_upd}')
         args_dict = merge(args_upd, args_dict, copy=True)
-
-    if output_file:
-        output_file = p.abspath(p.expandvars(p.expanduser(output_file)))
-        if dir_ is None:
-            dir_ = p.dirname(output_file)
-
-    if url:
-        html = None
-        if p.isfile(url):
-            url = pathlib.Path(url).as_uri()
-    elif html:
-        url = None
-    else:
-        raise PyppdfError('Either url or html arg should be set.')
 
     return asyncio.get_event_loop().run_until_complete(
         main(args=args_dict, url=url, html=html,
