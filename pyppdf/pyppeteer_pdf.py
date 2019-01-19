@@ -251,7 +251,7 @@ https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 @click.option('-d', '--dir', 'dir_', type=str, default=None,
               help="Directory for '--goto temp' mode. Has priority over dir of the --out")
 @click.option('-g', '--goto', type=click.Choice(list(GOTO)), default=None,
-              help=GOTO_HELP.replace('\r', '').replace('\n', ''))
+              help=GOTO_HELP.replace('\r', '').replace('\n', ' '))
 def cli(page, args_dict, args_upd, out, dir_, goto):
     url, html = (page, None) if page else (None, sys.stdin.read())
     ret = save_pdf(output_file=out, args_dict=args_dict, args_upd=args_upd,

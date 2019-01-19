@@ -75,13 +75,13 @@ Command line interface:
 
      -g, --goto [url|setContent|temp|data-text-html]
                       Choose page.goto behaviour. By default pyppdf tries 'url'
-                      modethen 'setContent' mode. 'url' works only if url (PAGE)
-                      arg wasprovided or {goto={url=<...>}} was set in the merged
-                      args.'setContent' (works without page.goto), 'temp' (temp
-                      file) and'data-text-html' work only with stdin input.
-                      'setContent' and'data-text-html' presumably do not support
-                      some remotecontent. I have bugs with the last one
-                      when:page.goto(f'data:text/html,{html}')
+                      mode then 'setContent' mode. 'url' works only if url (PAGE)
+                      arg was provided or {goto={url=<...>}} was set in the merged
+                      args. 'setContent' (works without page.goto), 'temp' (temp
+                      file) and 'data-text-html' work only with stdin input.
+                      'setContent' and 'data-text-html' presumably do not support
+                      some remote content. I have bugs with the last one
+                      when: page.goto(f'data:text/html,{html}')
      --help           Show this message and exit.
 
 See `Pyppeteer
