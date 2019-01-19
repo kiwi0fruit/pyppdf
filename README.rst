@@ -37,9 +37,22 @@ Install
 
 Needs python 3.6+
 
+conda install:
+~~~~~~~~~~~~~~
+
 .. code:: bash
 
-   pip install litereval
+   conda install -c defaults -c conda-forge certifi click websockets appdirs urllib3 tqdm
+   pip install pyppdf
+
+(pip will also install ``litereval pyee pyppeteer``)
+
+pip install:
+~~~~~~~~~~~~
+
+.. code:: bash
+
+   pip install pyppdf
 
 CLI
 ===

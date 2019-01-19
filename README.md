@@ -28,8 +28,18 @@ pyppdf -o doc.pdf --goto temp
 
 Needs python 3.6+
 
+### conda install:
+
 ```bash
-pip install litereval
+conda install -c defaults -c conda-forge certifi click websockets appdirs urllib3 tqdm
+pip install pyppdf
+```
+(pip will also install `litereval pyee pyppeteer`)
+
+### pip install:
+
+```bash
+pip install pyppdf
 ```
 
 
