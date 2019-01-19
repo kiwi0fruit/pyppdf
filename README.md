@@ -17,10 +17,20 @@ pyppdf -o doc.pdf --goto temp
 
 # Contents:
 
+* [Install](#install)
 * [CLI](#cli)
   * [pyppdf](#pyppdf)
   * [pyppdf-replace-mathjax](#pyppdf-replace-mathjax)
 * [Python API](#python-api)
+
+
+# Install
+
+Needs python 3.6+
+
+```bash
+pip install litereval
+```
 
 
 # CLI

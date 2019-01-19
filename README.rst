@@ -24,12 +24,22 @@ following:
 Contents:
 =========
 
+-  `Install <#install>`__
 -  `CLI <#cli>`__
 
    -  `pyppdf <#pyppdf>`__
    -  `pyppdf-replace-mathjax <#pyppdf-replace-mathjax>`__
 
 -  `Python API <#python-api>`__
+
+Install
+=======
+
+Needs python 3.6+
+
+.. code:: bash
+
+   pip install litereval
 
 CLI
 ===
