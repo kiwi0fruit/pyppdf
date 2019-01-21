@@ -1,16 +1,15 @@
 #!/bin/bash
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+tagname="0.0.9"
+git tag -d "$tagname"
+git push --delete origin "$tagname"
+git tag -a "$tagname"
+git push --tags
 
 python setup.py sdist
 if [[ "$(uname -s)" == MINGW* ]]; then
     winpty twine upload dist/* --skip-existing
 else
     twine upload dist/* --skip-existing; fi
-
-tagname="0.0.9"
-git tag -d "$tagname"
-git push --delete origin "$tagname"
-git tag -a "$tagname"
-git push --tags
 
 rm -rf ./dist
