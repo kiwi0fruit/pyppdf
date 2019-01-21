@@ -31,10 +31,8 @@ Needs python 3.6+
 ### conda install:
 
 ```bash
-conda install -c defaults -c conda-forge certifi click websockets appdirs urllib3 tqdm
-pip install pyppdf
+conda install -c defaults -c conda-forge pyppdf
 ```
-(pip will also install `litereval pyee pyppeteer`)
 
 ### pip install:
 

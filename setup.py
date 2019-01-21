@@ -4,7 +4,7 @@ import os
 import versioneer
 
 here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
@@ -15,6 +15,7 @@ setup(
 
     description='Pyppeteer PDF. Print html sites and files to pdf via pyppeteer (uses patched pyppeteer that by default downloads updated Chromium revision via https with certifi).',
     long_description=long_description,
+    long_description_content_type="text/markdown",
 
     url='https://github.com/kiwi0fruit/pyppdf',
 
@@ -30,14 +31,13 @@ setup(
         'License :: OSI Approved :: MIT License',
 
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
 
     # keywords='sample setuptools development',
     packages=find_packages(exclude=['docs', 'tests']),
-
-    install_requires=['certifi', 'click', 'litereval>=0.0.5', 'pyppeteer>=0.0.25'],
+    python_requires='>=3.6',
+    install_requires=['certifi', 'click', 'litereval>=0.0.9', 'pyppeteer>=0.0.25'],
 
     entry_points={
         'console_scripts': [
