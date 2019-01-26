@@ -1,18 +1,18 @@
 diff --git a/pyppeteer/__init__.py b/pyppeteer/__init__.py
-index c1e4859..3b04aba 100644
+index 78cda6d..3b04aba 100644
 --- a/pyppeteer/__init__.py
 +++ b/pyppeteer/__init__.py
 @@ -11,7 +11,7 @@ from appdirs import AppDirs
  __author__ = """Hiroyuki Takagi"""
  __email__ = 'miyako.dev@gmail.com'
  __version__ = '0.0.25'
--__chromium_revision__ = '588429'
+-__chromium_revision__ = '575458'
 +__chromium_revision__ = '609904'
  __base_puppeteer_version__ = 'v1.6.0'
  __pyppeteer_home__ = os.environ.get(
      'PYPPETEER_HOME', AppDirs('pyppeteer').user_data_dir)  # type: str
 diff --git a/pyppeteer/chromium_downloader.py b/pyppeteer/chromium_downloader.py
-index 6111bac..2a5c23f 100644
+index fade935..5658abc 100644
 --- a/pyppeteer/chromium_downloader.py
 +++ b/pyppeteer/chromium_downloader.py
 @@ -13,6 +13,7 @@ from zipfile import ZipFile
@@ -23,9 +23,9 @@ index 6111bac..2a5c23f 100644
  
  from pyppeteer import __chromium_revision__, __pyppeteer_home__
  
-@@ -31,19 +32,20 @@ NO_PROGRESS_BAR = os.environ.get('PYPPETEER_NO_PROGRESS_BAR', '')
- if NO_PROGRESS_BAR.lower() in ('1', 'true'):
-     NO_PROGRESS_BAR = True  # type: ignore
+@@ -27,19 +28,20 @@ BASE_URL = f'{DOWNLOAD_HOST}/chromium-browser-snapshots'
+ REVISION = os.environ.get(
+     'PYPPETEER_CHROMIUM_REVISION', __chromium_revision__)
  
 +win_postf = "win" if int(REVISION) > 591479 else "win32"
  downloadURLs = {
@@ -48,7 +48,7 @@ index 6111bac..2a5c23f 100644
  }
  
  
-@@ -69,17 +71,14 @@ def get_url() -> str:
+@@ -65,17 +67,14 @@ def get_url() -> str:
  
  def download_zip(url: str) -> BytesIO:
      """Download data from url."""
