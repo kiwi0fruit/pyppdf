@@ -42,6 +42,15 @@ conda install -c defaults -c conda-forge pyppdf
 pip install pyppdf
 ```
 
+### Linux
+
+If on Ubuntu additionally install atk bridge 2 and gtk 3:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0
+```
+
 
 # CLI
 
