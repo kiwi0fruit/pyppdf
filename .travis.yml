@@ -1,0 +1,54 @@
+# Only build PRs or tags
+if: (type = pull_request) OR (tag IS present)
+
+os:
+  - windows
+  - linux
+  - osx
+
+dist: xenial
+
+language: shell
+
+notifications:
+  email: false
+
+git:
+  submodules: false
+
+# Install packages
+install:
+  - _py_ver="3.7"
+  - |
+    if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
+        choco install miniconda3
+        _pref="/c/tools/miniconda3"
+        export PATH="$_pref:$_pref/Scripts:$_pref/condabin:$PATH"
+    elif [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        export PATH="$HOME/miniconda/bin:$PATH"
+    else
+        sudo apt-get update
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        export PATH="$HOME/miniconda/bin:$PATH"
+    fi
+  - hash -r
+  - source activate base
+  - conda config --set always_yes yes --set changeps1 no
+  - conda config --add channels conda-forge
+  - conda config --add channels defaults
+  - conda update -y conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+  - |
+    conda create -y -n test-env "python=$_py_ver" "pip>=10.0.1" certifi click "litereval>=0.0.9" "pyppeteer>=0.0.25" py-pandoc
+  - source activate test-env
+  - pip install .
+
+# Run test
+script:
+  - pyppdf --help
+  - pyppdf-replace-mathjax --help
+  - bash ./ci-test

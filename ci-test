@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+printf "# Header\nText \$f(x)=x^2\$" |
+pandoc -f markdown -t html --mathjax --standalone --self-contained |
+pyppdf-replace-mathjax |
+pyppdf -o doc.pdf --goto temp
