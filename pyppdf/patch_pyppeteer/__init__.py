@@ -3,7 +3,7 @@ import os
 # But there is some OS specific stuff:
 # https://github.com/Bugazelle/chromium-all-old-stable-versions/blob/master/chromium.stable.csv
 if os.name == 'nt':
-  rev = '800208'
+  rev = '800202'
 else:
   rev = '800208'
 os.environ.setdefault('PYPPETEER_CHROMIUM_REVISION', rev)
