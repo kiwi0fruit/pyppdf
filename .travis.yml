@@ -52,6 +52,7 @@ install:
   - source activate test-env
   - pip install .
   - pyppdf-install
+  - pyppeteer-install
 
 # Run test
 script:
@@ -59,5 +60,9 @@ script:
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
         /home/travis/.local/share/pyppeteer/local-chromium/800217/chrome-linux/chrome
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
+        /home/travis/.local/share/pyppeteer/local-chromium/588429/chrome-linux/chrome
     fi
   - bash ./ci-test
