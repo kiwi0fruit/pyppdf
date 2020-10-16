@@ -53,7 +53,6 @@ install:
 # Run test
 script:
   - pyppdf --help
-  - pyppdf-replace-mathjax --help
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
         /home/travis/.local/share/pyppeteer/local-chromium/800217/chrome-linux/chrome
