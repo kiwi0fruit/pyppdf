@@ -51,6 +51,10 @@ sudo apt-get update
 sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0
 ```
 
+### Windows
+
+Ver. 0.0.13 doesn't work on py37 but works on py38.
+
 
 # CLI
 
