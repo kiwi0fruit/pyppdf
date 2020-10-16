@@ -17,6 +17,7 @@ git:
   submodules: false
 
 # Install packages
+# sudo apt-get install -y libxss1 libnss3 libasound2 libgm1 libx1-xcb1
 install:
   - _py_ver="3.8"
   - |
@@ -30,7 +31,7 @@ install:
         export PATH="$HOME/miniconda/bin:$PATH"
     else
         sudo apt-get update
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libxss1 libnss3 libasound2 libgm1 libx1-xcb1
+        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0
         wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
         bash miniconda.sh -b -p $HOME/miniconda
         export PATH="$HOME/miniconda/bin:$PATH"
@@ -47,9 +48,13 @@ install:
     conda create -y -n test-env "python=$_py_ver" "pip>=10.0.1" certifi click "litereval>=0.0.9" "pyppeteer>=0.2.2" py-pandoc
   - source activate test-env
   - pip install .
+  - pyppeteer-install
 
 # Run test
 script:
   - pyppdf --help
   - pyppdf-replace-mathjax --help
+  - if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
+        /home/travis/.local/share/pyppeteer/local-chromium/800217/chrome-linux/chrome
+    fi
   - bash ./ci-test
