@@ -1,5 +1,5 @@
 # Only build PRs or tags
-# if: (type = pull_request) OR (tag IS present)
+if: (type = pull_request) OR (tag IS present)
 
 os:
   - windows
@@ -30,7 +30,7 @@ install:
         export PATH="$HOME/miniconda/bin:$PATH"
     else
         sudo apt-get update
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0
+        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libxss1 libnss3 libasound2 libgm1 libx1-xcb1
         wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
         bash miniconda.sh -b -p $HOME/miniconda
         export PATH="$HOME/miniconda/bin:$PATH"
