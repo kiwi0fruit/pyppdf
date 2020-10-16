@@ -11,8 +11,8 @@ from pyppeteer.chromium_downloader import *
 
 def download_zip(url: str) -> BytesIO:
     """Download data from url."""
-    logger.warning('start patched secure https chromium download.\n'
-                   'Download may take a few minutes.')
+    logger.warning('start patched secure https chromium download.n' +'
+                   f'from {url} ; Download may take a few minutes.')
 
     with urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
                              ca_certs=certifi.where()) as https:
