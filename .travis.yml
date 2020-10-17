@@ -60,10 +60,10 @@ script:
   - pyppdf --help
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-        /home/travis/.local/share/pyppeteer/local-chromium/800217/chrome-linux/chrome
+        /home/travis/.local/share/pyppeteer/local-chromium/800217/chrome-linux/chrome --headless
     fi
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-        /home/travis/.local/share/pyppeteer/local-chromium/588429/chrome-linux/chrome
+        /home/travis/.local/share/pyppeteer/local-chromium/588429/chrome-linux/chrome --headless
     fi
   - bash ./ci-test
