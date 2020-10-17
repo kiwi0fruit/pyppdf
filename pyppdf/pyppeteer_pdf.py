@@ -129,6 +129,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         if waitFor.args is not None:
             await page.waitFor(*waitFor.args, **waitFor.kwargs)
 
+        procs = psutil.Process().children(recursive=True)
         ret = await page.pdf(**pdf.kwargs)
         procs = psutil.Process().children(recursive=True)
 
