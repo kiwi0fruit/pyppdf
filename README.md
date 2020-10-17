@@ -53,7 +53,7 @@ sudo apt-get install -y ca-certificates fonts-liberation libappindicator3-1 liba
 
 ### Windows
 
-Ver. 0.0.13 doesn't work on py37 but works on py38.
+Ver. 0.1.0 doesn't work on py37 but works on py38.
 
 
 # CLI
