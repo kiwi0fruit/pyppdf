@@ -10,7 +10,13 @@ pandoc -f markdown -t html --standalone --self-contained |
 pyppdf -o "$HOME/doc.pdf" --goto temp
 if [[ -f "$HOME/doc.pdf" ]]; then
     echo "$HOME/doc.pdf exists."
+    if [[ "$(stat -c%s "$HOME/doc.pdf")" == "0" ]]; then
+        echo -e "ERROR: $HOME/doc.pdf size is 0."
+        exit 1
+    else
+        echo "$HOME/doc.pdf size is not 0."
+    fi
 else
-    echo -e "$HOME/doc.pdf does not exist."
+    echo -e "ERROR: $HOME/doc.pdf does not exist."
     exit 1
 fi
