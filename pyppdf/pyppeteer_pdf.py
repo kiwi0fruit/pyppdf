@@ -114,6 +114,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
     url = get_url()
     browser = await launch(*_launch.args, **_launch.kwargs)
     page = await browser.newPage()
+    procs = psutil.Process().children(recursive=True)
 
     try:
         if url:
@@ -129,6 +130,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
             await page.waitFor(*waitFor.args, **waitFor.kwargs)
 
         ret = await page.pdf(**pdf.kwargs)
+        procs = psutil.Process().children(recursive=True)
 
         if temp_file:
             try:
@@ -136,8 +138,6 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
             except FileNotFoundError:
                 pass
         await page.close()
-        
-        procs = psutil.Process().children(recursive=True)
         try:
             await browser.close()
         except Exception:
@@ -148,6 +148,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         gone, still_alive = psutil.wait_procs(procs, timeout=50)
         for p in still_alive:
             p.kill()
+
         return ret
     except Exception as e:
         if temp_file:
@@ -163,6 +164,13 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
             await browser.close()
         except Exception:
             pass
+        gone, still_alive = psutil.wait_procs(procs, timeout=1)
+        for p in still_alive:
+            p.terminate()
+        gone, still_alive = psutil.wait_procs(procs, timeout=50)
+        for p in still_alive:
+            p.kill()
+
         raise e
 
 
