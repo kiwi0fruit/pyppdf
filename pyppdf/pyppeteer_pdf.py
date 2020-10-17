@@ -2,6 +2,8 @@ import click
 import sys
 import os
 import os.path as p
+import psutil
+import traceback
 import pathlib
 import asyncio
 import re
@@ -134,7 +136,18 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
             except FileNotFoundError:
                 pass
         await page.close()
-        await browser.close()
+        
+        procs = psutil.Process().children(recursive=True)
+        try:
+            await browser.close()
+        except Exception:
+            traceback.print_exc(file=sys.stderr)
+        gone, still_alive = psutil.wait_procs(procs, timeout=1)
+        for p in still_alive:
+            p.terminate()
+        gone, still_alive = psutil.wait_procs(procs, timeout=50)
+        for p in still_alive:
+            p.kill()
         return ret
     except Exception as e:
         if temp_file:
