@@ -8,3 +8,9 @@ pandoc -f markdown -t html --standalone --self-contained
 printf "# Header\nText \$f(x)=x^2\$" |
 pandoc -f markdown -t html --standalone --self-contained |
 pyppdf -o ~/doc.pdf --goto temp
+if [[ -f ~/doc.pdf ]]; then
+    echo "~/doc.pdf exists."
+else
+    echo "~/doc.pdf does not exist."
+    exit 1
+fi
