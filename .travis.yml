@@ -46,7 +46,7 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   - |
-    conda create -y -n test-env "python=$_py_ver" "pip>=10.0.1" certifi click "litereval>=0.0.9" "pyppeteer>=0.2.2" py-pandoc
+    conda create -y -n test-env "python=$_py_ver" "pip>=10.0.1" certifi click psutil "litereval>=0.0.9" "pyppeteer>=0.2.2" py-pandoc
   - source activate test-env
   - pip install .
   - pyppdf-install
