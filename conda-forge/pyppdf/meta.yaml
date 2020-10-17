@@ -25,6 +25,7 @@ requirements:
     - python >=3.6
     - certifi
     - click
+    - psutil
     - litereval >=0.0.9
     - pyppeteer >=0.2.2
 
