@@ -12,7 +12,6 @@ At the moment recommended settings when reading from stdin are following:
 echo "# Header
 Text \$f(x)=x^2\$" |
 pandoc -f markdown -t html --mathjax --standalone --self-contained |
-pyppdf-replace-mathjax |
 pyppdf -o doc.pdf --goto temp
 ```
 
@@ -22,7 +21,6 @@ pyppdf -o doc.pdf --goto temp
 * [Install](#install)
 * [CLI](#cli)
   * [pyppdf](#pyppdf)
-  * [pyppdf-replace-mathjax](#pyppdf-replace-mathjax)
 * [Python API](#python-api)
 
 
@@ -109,22 +107,6 @@ Options:
 ```
 
 See [Pyppeteer methods](https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf).
-
-
-### pyppdf-replace-mathjax
-
-`pyppdf-replace-mathjax`: Replaces MathJax script section with URL only script. First arg is optional custom MathJax URL. Reads from stdin and writes to stdout.
-
-```py
-def replace_mathjax(
-        html: str,
-        mathjax_url: str="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"
-):
-    return re.sub(
-        r"<script[^<]+?[Mm]ath[Jj]ax.+?</script>",
-        f"<script src=\"{mathjax_url}\" async></script>",
-        html, flags=re.DOTALL)
-```
 
 
 # Python API
