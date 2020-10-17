@@ -21,6 +21,7 @@ pyppdf -o doc.pdf --goto temp
 * [Install](#install)
 * [CLI](#cli)
   * [pyppdf](#pyppdf)
+  * [pyppdf-install](#pyppdf-install)
 * [Python API](#python-api)
 
 
@@ -106,6 +107,15 @@ Options:
 ```
 
 See [Pyppeteer methods](https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf).
+
+
+### pyppdf-install
+
+Simply downloads and installs Chromium beforehead (uses fresher revision from pyppdf):
+
+```bash
+pyppdf-install
+```
 
 
 # Python API
