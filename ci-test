@@ -11,6 +11,6 @@ pyppdf -o ~/doc.pdf --goto temp
 if [[ -f ~/doc.pdf ]]; then
     echo "~/doc.pdf exists."
 else
-    echo "~/doc.pdf does not exist."
+    echo -e "~/doc.pdf does not exist."
     exit 1
 fi
