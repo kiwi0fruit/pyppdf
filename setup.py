@@ -38,7 +38,7 @@ setup(
     # keywords='sample setuptools development',
     packages=find_packages(exclude=['docs', 'tests']),
     python_requires='>=3.6',
-    install_requires=['certifi', 'click', 'litereval>=0.0.9', 'pyppeteer>=0.2.2'],
+    install_requires=['certifi', 'click', 'psutil', 'litereval>=0.0.9', 'pyppeteer>=0.2.2'],
 
     entry_points={
         'console_scripts': [
