@@ -6,7 +6,8 @@ os:
   - linux
 #  - osx
 
-dist: focal
+# dist: focal
+dist: bionic
 osx_image: xcode11.3
 language: shell
 services: xvfb
