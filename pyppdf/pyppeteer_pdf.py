@@ -149,6 +149,8 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         for p_ in still_alive:
             p_.kill()
 
+        if not ret:
+            raise PyppdfError("Empty PDF bytes received")
         return ret
     except Exception as e:
         if temp_file:
