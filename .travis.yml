@@ -3,8 +3,8 @@
 
 os:
   - windows
-#  - linux
-#  - osx
+  - linux
+  - osx
 
 dist: focal
 osx_image: xcode11.3
