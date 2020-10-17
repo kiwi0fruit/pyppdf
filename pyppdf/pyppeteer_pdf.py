@@ -143,11 +143,11 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         except Exception:
             traceback.print_exc(file=sys.stderr)
         gone, still_alive = psutil.wait_procs(procs, timeout=1)
-        for p in still_alive:
-            p.terminate()
+        for p_ in still_alive:
+            p_.terminate()
         gone, still_alive = psutil.wait_procs(procs, timeout=50)
-        for p in still_alive:
-            p.kill()
+        for p_ in still_alive:
+            p_.kill()
 
         return ret
     except Exception as e:
@@ -165,11 +165,11 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         except Exception:
             pass
         gone, still_alive = psutil.wait_procs(procs, timeout=1)
-        for p in still_alive:
-            p.terminate()
+        for p_ in still_alive:
+            p_.terminate()
         gone, still_alive = psutil.wait_procs(procs, timeout=50)
-        for p in still_alive:
-            p.kill()
+        for p_ in still_alive:
+            p_.kill()
 
         raise e
 
