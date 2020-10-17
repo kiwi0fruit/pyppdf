@@ -10,6 +10,7 @@ from litereval import litereval, merge, get_args
 # noinspection PyUnresolvedReferences
 from .patch_pyppeteer import patch_pyppeteer
 from pyppeteer import launch
+from pyppeteer.errors import PageError
 
 
 class PyppdfError(Exception):
@@ -141,8 +142,14 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
                 os.remove(temp_file)
             except FileNotFoundError:
                 pass
-        await page.close()
-        await browser.close()
+        try:
+            await page.close()
+        except Exception:
+            pass
+        try:
+            await browser.close()
+        except Exception:
+            pass
         raise e
 
 
