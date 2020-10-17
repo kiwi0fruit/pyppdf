@@ -3,5 +3,8 @@ set -euo pipefail
 IFS=$'\n\t'
 
 printf "# Header\nText \$f(x)=x^2\$" |
+pandoc -f markdown -t html --standalone --self-contained
+
+printf "# Header\nText \$f(x)=x^2\$" |
 pandoc -f markdown -t html --standalone --self-contained |
 pyppdf -o doc.pdf --goto temp
