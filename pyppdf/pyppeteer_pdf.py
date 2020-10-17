@@ -110,9 +110,9 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
 
     url = get_url()
     browser = await launch(*_launch.args, **_launch.kwargs)
+    page = await browser.newPage()
 
     try:
-        page = await browser.newPage()
         if url:
             await page.goto(url, *_goto.args, **_goto.kwargs)
         else:
@@ -132,6 +132,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
                 os.remove(temp_file)
             except FileNotFoundError:
                 pass
+        await page.close()
         await browser.close()
         return ret
     except Exception as e:
@@ -140,6 +141,7 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
                 os.remove(temp_file)
             except FileNotFoundError:
                 pass
+        await page.close()
         await browser.close()
         raise e
 
