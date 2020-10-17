@@ -79,8 +79,7 @@ Usage: pyppdf [OPTIONS] [PAGE]
   used):  pyppeteer.launch, page.goto, page.emulateMedia,
   page.waitForNavigation, page.waitFor, page.pdf. See:
 
-  https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pd
-  f
+  https://pyppeteer.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
 Options:
   -a, --args TEXT  Python code str that would be evaluated to the dictionary
@@ -124,7 +123,7 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     conversion (only the last name should be used):
     ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``,
     ``page.waitForNavigation``, ``page.waitFor``, ``page.pdf``. See:
-     https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+     https://pyppeteer.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
     ``args_dict`` default value:
 
