@@ -11,7 +11,7 @@ At the moment recommended settings when reading from stdin are following:
 ```bash
 echo "# Header
 Text \$f(x)=x^2\$" |
-pandoc -f markdown -t html --mathjax --standalone --self-contained |
+pandoc -f markdown -t html --standalone --self-contained |
 pyppdf -o doc.pdf --goto temp
 ```
 
