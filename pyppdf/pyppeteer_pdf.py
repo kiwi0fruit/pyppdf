@@ -150,7 +150,7 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
     conversion (only the last name should be used):
     ``pyppeteer.launch``, ``page.goto``, ``page.emulateMedia``,
     ``page.waitForNavigation``, ``page.waitFor``, ``page.pdf``. See:
-     https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+     https://pyppeteer.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 
     ``args_dict`` default value:
 
@@ -238,7 +238,7 @@ They affect the following pyppeteer methods (only the last name should
 be used):  pyppeteer.launch, page.goto, page.emulateMedia, page.waitForNavigation,
 page.waitFor, page.pdf. See:
 
-https://miyakogi.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
+https://pyppeteer.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf
 """)
 @click.argument('page', type=str, default=None, required=False)
 @click.option('-a', '--args', 'args_dict', type=str, default=None,
