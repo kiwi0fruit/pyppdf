@@ -128,12 +128,18 @@ async def main(args: dict, url: str=None, html: str=None, output_file: str=None,
         ret = await page.pdf(**pdf.kwargs)
 
         if temp_file:
-            os.remove(temp_file)
+            try:
+                os.remove(temp_file)
+            except FileNotFoundError:
+                pass
         await browser.close()
         return ret
     except Exception as e:
         if temp_file:
-            os.remove(temp_file)
+            try:
+                os.remove(temp_file)
+            except FileNotFoundError:
+                pass
         await browser.close()
         raise e
 
