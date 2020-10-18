@@ -68,9 +68,9 @@ Usage: pyppdf [OPTIONS] [PAGE]
 
   -a, --args defaults:
 
-  {goto={waitUntil='networkidle0', timeout=100000}, pdf={width='8.27in',
-  printBackground=True, margin={top='1in', right='1in', bottom='1in',
-  left='1in'},}}
+  {launch={args=['--font-render-hinting=none']},goto={waitUntil='networkidle0',
+  timeout=100000}, pdf={width='8.27in', printBackground=True, margin={top='1in',
+  right='1in', bottom='1in', left='1in'},}}
 
   They affect the following pyppeteer methods (only the last name should be
   used):  pyppeteer.launch, page.goto, page.emulateMedia,
@@ -133,7 +133,8 @@ def save_pdf(output_file: str=None, url: str=None, html: str=None,
 
     ``args_dict`` default value:
 
-    >>> # {goto={waitUntil='networkidle0', timeout=100000},
+    >>> # {launch={args=['--font-render-hinting=none']},
+    >>> #  goto={waitUntil='networkidle0', timeout=100000},
     >>> #  pdf={width='8.27in', printBackground=True,
     >>> #       margin={top='1in', right='1in',
     >>> #               bottom='1in', left='1in'},}}
